@@ -6,22 +6,24 @@ import (
 	"os"
 )
 
-// run
-func run(s string) {}
+// run runs a line of lox
+func run(s string) {
+	fmt.Println(s)
+}
 
 func runFile(path string) {}
 
 func runPrompt() {
 
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Print("> ")
-	for scanner.Scan() {
+	for {
+		fmt.Print("> ")
+		scanner.Scan()
 		line := scanner.Text()
 		if line == "" {
 			continue
 		} else {
-			fmt.Println(line)
-			fmt.Print("> ")
+			run(line)
 		}
 	}
 }
@@ -31,8 +33,8 @@ func main() {
 	if len(args) > 1 {
 		fmt.Println("Usage: go-lox [script]")
 		return
-	} else if len(args) == 1 {
-		runFile(args[0])
+	} else if len(args) == 2 {
+		runFile(args[1])
 	} else {
 		runPrompt()
 	}

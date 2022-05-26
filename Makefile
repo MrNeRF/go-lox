@@ -1,4 +1,2 @@
 build:
-	go build -o build/go-lox main.go
-
-clean: rm -rf build/
+	go build -o build/go-lox src/main.go
