@@ -6,6 +6,11 @@ import (
 	"os"
 )
 
+// run
+func run(s string) {}
+
+func runFile(path string) {}
+
 func runPrompt() {
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -13,7 +18,7 @@ func runPrompt() {
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "" {
-			break
+			continue
 		} else {
 			fmt.Println(line)
 			fmt.Print("> ")
@@ -22,5 +27,13 @@ func runPrompt() {
 }
 
 func main() {
-	runPrompt()
+	args := os.Args
+	if len(args) > 1 {
+		fmt.Println("Usage: go-lox [script]")
+		return
+	} else if len(args) == 1 {
+		runFile(args[0])
+	} else {
+		runPrompt()
+	}
 }
