@@ -3,15 +3,24 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 )
 
 // run runs a line of lox
 func run(s string) {
-	fmt.Println(s)
+	t := NewTokenizer(s)
+	t.scanTokens()
 }
 
-func runFile(path string) {}
+func runFile(path string) {
+	content, err := ioutil.ReadFile(path) // the file is inside the local directory
+	if err != nil {
+		fmt.Println("Err")
+	}
+	t := NewTokenizer(string(content))
+	t.scanToken()
+}
 
 func runPrompt() {
 

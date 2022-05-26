@@ -1,5 +1,9 @@
 package main
 
+import (
+	"log"
+)
+
 type TokenType uint8
 
 const (
@@ -85,15 +89,26 @@ func (t *Tokenizer) scanToken() {
 	switch c {
 	case "(":
 		t.addToken(LEFT_PAREN)
-		break
 	case ")":
 		t.addToken(RIGHT_BRACE)
-		break
 	case "{":
 		t.addToken(LEFT_BRACE)
-		break
 	case "}":
 		t.addToken(RIGHT_BRACE)
+	case ",":
+		t.addToken(COMMA)
+	case ".":
+		t.addToken(DOT)
+	case "-":
+		t.addToken(MINUS)
+	case "+":
+		t.addToken(PLUS)
+	case ";":
+		t.addToken(SEMICOLON)
+	case "*":
+		t.addToken(STAR)
+	default:
+		log.Fatal("Unexpected Character: '", c, "'")
 	}
 
 }
