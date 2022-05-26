@@ -19,7 +19,10 @@ func runFile(path string) {
 		fmt.Println("Err")
 	}
 	t := NewTokenizer(string(content))
-	t.scanToken()
+	for !t.isAtEnd() {
+		t.scanToken()
+	}
+	fmt.Println(t.tokenList)
 }
 
 func runPrompt() {

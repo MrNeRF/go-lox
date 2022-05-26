@@ -77,7 +77,7 @@ func NewTokenizer(input string) *Tokenizer {
 // len only works here if characters are a single byte
 // which is true for ASCII characters only.
 func (t *Tokenizer) scanTokens() {
-	for t.current <= len(t.input) {
+	for !t.isAtEnd() {
 		t.start = t.current
 		t.scanToken()
 	}
@@ -107,6 +107,13 @@ func (t *Tokenizer) scanToken() {
 		t.addToken(SEMICOLON)
 	case "*":
 		t.addToken(STAR)
+	case " ":
+	case "\r":
+	case "\t":
+	case "\n":
+		t.line++
+	case "\"":
+		t.stringLiteral()
 	default:
 		log.Fatal("Unexpected Character: '", c, "'")
 	}
@@ -120,5 +127,38 @@ func (t *Tokenizer) addToken(tokenType TokenType) {
 
 // advance for single characters tokens.
 func (t *Tokenizer) advance() string {
-	return t.input[t.current : t.current+1]
+	var c string = t.input[t.current : t.current+1]
+	t.current++
+	return c
+}
+
+// lookahead next character
+func (t *Tokenizer) peek() string {
+	c := t.input[t.current : t.current+1]
+	return c
+}
+
+func (t *Tokenizer) isAtEnd() bool {
+	return t.current > len(t.input)
+}
+
+func (t *Tokenizer) stringLiteral() {
+	for t.peek() != "\"" && !t.isAtEnd() {
+		if t.peek() == "\n" {
+			t.line++
+		}
+		t.advance()
+	}
+
+	if t.isAtEnd() {
+		log.Fatal("Unterminated string, Line: ", t.line)
+		return
+	}
+
+	t.advance()
+
+	// Trim the surrounding quotes.
+	lexeme := t.input[t.start:t.current]
+	value := t.input[t.start+1 : t.current-1]
+	t.tokenList = append(t.tokenList, Token{tokenType: STRING, lexeme: lexeme, line: t.line, literal: value})
 }
