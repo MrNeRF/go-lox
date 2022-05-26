@@ -60,8 +60,50 @@ type Token struct {
 type Tokenizer struct {
 	input     string
 	tokenList []Token
+
+	start   int
+	current int
+	line    int
 }
 
 func NewTokenizer(input string) *Tokenizer {
-	return &Tokenizer{input: input}
+	return &Tokenizer{input: input, start: 0, current: 0, line: 1}
+}
+
+// len only works here if characters are a single byte
+// which is true for ASCII characters only.
+func (t *Tokenizer) scanTokens() {
+	for t.current <= len(t.input) {
+		t.start = t.current
+		t.scanToken()
+	}
+	t.tokenList = append(t.tokenList, Token{tokenType: EOF})
+}
+
+func (t *Tokenizer) scanToken() {
+	c := t.advance()
+	switch c {
+	case "(":
+		t.addToken(LEFT_PAREN)
+		break
+	case ")":
+		t.addToken(RIGHT_BRACE)
+		break
+	case "{":
+		t.addToken(LEFT_BRACE)
+		break
+	case "}":
+		t.addToken(RIGHT_BRACE)
+	}
+
+}
+
+// single character tokens
+func (t *Tokenizer) addToken(tokenType TokenType) {
+	t.tokenList = append(t.tokenList, Token{tokenType: tokenType, lexeme: t.input[t.current : t.current+1], line: t.line, literal: nil})
+}
+
+// advance for single characters tokens.
+func (t *Tokenizer) advance() string {
+	return t.input[t.current : t.current+1]
 }
