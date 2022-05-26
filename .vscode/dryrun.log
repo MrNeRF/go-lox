@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/workspaces/go-lox'
+go build -o build/go-lox src/main.go
+make: Leaving directory '/workspaces/go-lox'
+ 
