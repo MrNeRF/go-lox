@@ -30,7 +30,7 @@ func runPrompt() {
 
 func main() {
 	args := os.Args
-	if len(args) > 1 {
+	if len(args) > 2 {
 		fmt.Println("Usage: go-lox [script]")
 		return
 	} else if len(args) == 2 {
