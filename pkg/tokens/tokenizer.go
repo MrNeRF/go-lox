@@ -1,6 +1,9 @@
 package tokens
 
-import "log"
+import (
+	"log"
+	"strconv"
+)
 
 type Tokenizer struct {
 	input     string
@@ -85,8 +88,19 @@ func (t *Tokenizer) advance() string {
 
 // lookahead next character
 func (t *Tokenizer) peek() string {
+	if t.isAtEnd() {
+		return "\000"
+	}
 	c := t.input[t.current : t.current+1]
 	return c
+}
+
+// we have a BIG problem here if the number is at EOF.
+func (t *Tokenizer) peekNext() string {
+	if t.current+1 >= len(t.input) {
+		return "\000"
+	}
+	return t.input[t.current+1 : t.current+2]
 }
 
 func (t *Tokenizer) isAtEnd() bool {
@@ -158,7 +172,19 @@ func isDigit(s string) bool {
 }
 
 func (t *Tokenizer) addnumberToken() {
-	//TODO
+	for isDigit(t.peek()) {
+		t.advance()
+	}
+	if t.peek() == "." && isDigit(t.peekNext()) {
+		t.advance()
+	}
+	for isDigit(t.peek()) {
+		t.advance()
+	}
+	floatnum, err := strconv.ParseFloat(t.input[t.start:t.current], 64)
+	if err == nil {
+		t.addToken(&Token{tokenType: NUMBER, lexeme: t.input[t.start:t.current], line: t.line, literal: floatnum})
+	}
 }
 
 func (t *Tokenizer) addSlashToken() {
