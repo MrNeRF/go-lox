@@ -22,7 +22,7 @@ func (t *Tokenizer) ScanTokens() {
 		t.start = t.current
 		t.scanToken()
 	}
-	t.tokenList = append(t.tokenList, Token{tokenType: EOF})
+	t.addToken(&Token{tokenType: EOF, line: t.line, literal: nil})
 }
 
 func (t *Tokenizer) GetTokenList() []Token {
@@ -33,25 +33,25 @@ func (t *Tokenizer) scanToken() {
 	c := t.advance()
 	switch c {
 	case "(":
-		t.addToken(LEFT_PAREN)
+		t.addToken(&Token{tokenType: LEFT_PAREN, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
 	case ")":
-		t.addToken(RIGHT_BRACE)
+		t.addToken(&Token{tokenType: RIGHT_PAREN, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
 	case "{":
-		t.addToken(LEFT_BRACE)
+		t.addToken(&Token{tokenType: LEFT_BRACE, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
 	case "}":
-		t.addToken(RIGHT_BRACE)
+		t.addToken(&Token{tokenType: RIGHT_BRACE, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
 	case ",":
-		t.addToken(COMMA)
+		t.addToken(&Token{tokenType: COMMA, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
 	case ".":
-		t.addToken(DOT)
+		t.addToken(&Token{tokenType: DOT, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
 	case "-":
-		t.addToken(MINUS)
+		t.addToken(&Token{tokenType: MINUS, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
 	case "+":
-		t.addToken(PLUS)
+		t.addToken(&Token{tokenType: PLUS, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
 	case ";":
-		t.addToken(SEMICOLON)
+		t.addToken(&Token{tokenType: SEMICOLON, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
 	case "*":
-		t.addToken(STAR)
+		t.addToken(&Token{tokenType: STAR, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
 	case " ":
 	case "\r":
 	case "\t":
@@ -59,20 +59,21 @@ func (t *Tokenizer) scanToken() {
 		t.line++
 	case "\"":
 		t.addstringLiteralToken()
+	case "/":
+		t.addSlashToken()
 	case "!", "=", "<", ">":
-		t.addOperatorToken(c)
+		t.addOperatorToken()
 	default:
-		//if t.isDigit(c) {
-		//	t.number()
-		//} else {
-		log.Fatal("Unexpected Character: '", c, "'", " at line ", t.line)
-		//}
+		if isDigit(c) {
+			t.addnumberToken()
+		} else {
+			log.Fatal("Unexpected Character: '", c, "'", " at line ", t.line)
+		}
 	}
 }
 
-// single character tokens
-func (t *Tokenizer) addToken(tokenType TokenType) {
-	t.tokenList = append(t.tokenList, Token{tokenType: tokenType, lexeme: t.input[t.current-1 : t.current], line: t.line, literal: nil})
+func (t *Tokenizer) addToken(token *Token) {
+	t.tokenList = append(t.tokenList, *token)
 }
 
 // advance for single characters tokens.
@@ -108,36 +109,35 @@ func (t *Tokenizer) addstringLiteralToken() {
 	t.advance()
 
 	// Trim the surrounding quotes.
-	lexeme := t.input[t.start:t.current]
-	value := t.input[t.start+1 : t.current-1]
-	t.tokenList = append(t.tokenList, Token{tokenType: STRING, lexeme: lexeme, line: t.line, literal: value})
+	t.addToken(&Token{tokenType: STRING, lexeme: t.input[t.start:t.current], line: t.line, literal: t.input[t.start+1 : t.current-1]})
 }
 
-func (t *Tokenizer) addOperatorToken(c string) {
+func (t *Tokenizer) addOperatorToken() {
+	c := t.input[t.start:t.current]
 	switch c {
 	case "!":
 		if t.match("=") {
-			t.tokenList = append(t.tokenList, Token{tokenType: BANG_EQUAL, lexeme: "!=", line: t.line, literal: nil})
+			t.addToken(&Token{tokenType: BANG_EQUAL, lexeme: "!=", line: t.line, literal: nil})
 		} else {
-			t.tokenList = append(t.tokenList, Token{tokenType: BANG, lexeme: "!", line: t.line, literal: nil})
+			t.addToken(&Token{tokenType: BANG, lexeme: "!", line: t.line, literal: nil})
 		}
 	case "=":
 		if t.match("=") {
-			t.tokenList = append(t.tokenList, Token{tokenType: EQUAL_EQUAL, lexeme: "==", line: t.line, literal: nil})
+			t.addToken(&Token{tokenType: EQUAL_EQUAL, lexeme: "==", line: t.line, literal: nil})
 		} else {
-			t.tokenList = append(t.tokenList, Token{tokenType: EQUAL, lexeme: "=", line: t.line, literal: nil})
+			t.addToken(&Token{tokenType: EQUAL, lexeme: "=", line: t.line, literal: nil})
 		}
 	case "<":
 		if t.match("=") {
-			t.tokenList = append(t.tokenList, Token{tokenType: LESS_EQUAL, lexeme: "<=", line: t.line, literal: nil})
+			t.addToken(&Token{tokenType: LESS_EQUAL, lexeme: "<=", line: t.line, literal: nil})
 		} else {
-			t.tokenList = append(t.tokenList, Token{tokenType: LESS, lexeme: "<", line: t.line, literal: nil})
+			t.addToken(&Token{tokenType: LESS, lexeme: "<", line: t.line, literal: nil})
 		}
 	case ">":
 		if t.match("=") {
-			t.tokenList = append(t.tokenList, Token{tokenType: GREATER_EQUAL, lexeme: ">=", line: t.line, literal: nil})
+			t.addToken(&Token{tokenType: GREATER_EQUAL, lexeme: ">=", line: t.line, literal: nil})
 		} else {
-			t.tokenList = append(t.tokenList, Token{tokenType: GREATER, lexeme: ">", line: t.line, literal: nil})
+			t.addToken(&Token{tokenType: GREATER, lexeme: ">", line: t.line, literal: nil})
 		}
 	}
 }
@@ -155,4 +155,12 @@ func (t *Tokenizer) match(m string) bool {
 
 func isDigit(s string) bool {
 	return s[0] >= '0' && s[0] <= '9'
+}
+
+func (t *Tokenizer) addnumberToken() {
+	//TODO
+}
+
+func (t *Tokenizer) addSlashToken() {
+	//TODO
 }
