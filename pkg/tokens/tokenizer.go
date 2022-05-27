@@ -59,15 +59,8 @@ func (t *Tokenizer) scanToken() {
 		t.line++
 	case "\"":
 		t.addstringLiteralToken()
-	case "!":
+	case "!", "=", "<", ">":
 		t.addOperatorToken(c)
-	case "=":
-		t.addOperatorToken(c)
-	case "<":
-		t.addOperatorToken(c)
-	case ">":
-		t.addOperatorToken(c)
-
 	default:
 		log.Fatal("Unexpected Character: '", c, "'", " at line ", t.line)
 	}

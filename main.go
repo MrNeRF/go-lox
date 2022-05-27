@@ -3,7 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"go-lox/src/tokens"
+	"go-lox/pkg/tokens"
+	"go-lox/pkg/utils"
 	"io/ioutil"
 	"os"
 )
@@ -25,9 +26,10 @@ func runFile(path string) {
 
 func runPrompt() {
 
+	utils.PrintPromptInit()
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		fmt.Print("> ")
+		fmt.Print(">>> ")
 		scanner.Scan()
 		line := scanner.Text()
 		if line == "" {

@@ -1,16 +1,14 @@
 #https://go.dev/doc/code
 
-MAIN = src/main.go
-TOKENS = src/tokens/*.go
+TOKENS = pkg/tokens/*.go
+UTILS = pkg/utils/*.go
+PACKAGES = $(TOKENS) $(UTILS)
 
-#build: $(SOURCES)
-#	go build -o build/go-lox $^
+all: build install
 
-build:
+build: $(PACKAGES)
+	go build $(UTILS)
 	go build $(TOKENS)
-	go build -o build/go-lox
 
-
-.PHONY: clean
-clean:
-	rm -rf build
+install:
+	go install
