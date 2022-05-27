@@ -58,7 +58,16 @@ func (t *Tokenizer) scanToken() {
 	case "\n":
 		t.line++
 	case "\"":
-		t.stringLiteral()
+		t.addstringLiteralToken()
+	case "!":
+		t.addOperatorToken(c)
+	case "=":
+		t.addOperatorToken(c)
+	case "<":
+		t.addOperatorToken(c)
+	case ">":
+		t.addOperatorToken(c)
+
 	default:
 		log.Fatal("Unexpected Character: '", c, "'", " at line ", t.line)
 	}
@@ -66,7 +75,7 @@ func (t *Tokenizer) scanToken() {
 
 // single character tokens
 func (t *Tokenizer) addToken(tokenType TokenType) {
-	t.tokenList = append(t.tokenList, Token{tokenType: tokenType, lexeme: t.input[t.current : t.current+1], line: t.line, literal: nil})
+	t.tokenList = append(t.tokenList, Token{tokenType: tokenType, lexeme: t.input[t.current-1 : t.current], line: t.line, literal: nil})
 }
 
 // advance for single characters tokens.
@@ -86,7 +95,7 @@ func (t *Tokenizer) isAtEnd() bool {
 	return t.current >= len(t.input)
 }
 
-func (t *Tokenizer) stringLiteral() {
+func (t *Tokenizer) addstringLiteralToken() {
 	for t.peek() != "\"" && !t.isAtEnd() {
 		if t.peek() == "\n" {
 			t.line++
@@ -105,4 +114,44 @@ func (t *Tokenizer) stringLiteral() {
 	lexeme := t.input[t.start:t.current]
 	value := t.input[t.start+1 : t.current-1]
 	t.tokenList = append(t.tokenList, Token{tokenType: STRING, lexeme: lexeme, line: t.line, literal: value})
+}
+
+func (t *Tokenizer) addOperatorToken(c string) {
+	switch c {
+	case "!":
+		if t.match("=") {
+			t.tokenList = append(t.tokenList, Token{tokenType: BANG_EQUAL, lexeme: "!=", line: t.line, literal: nil})
+		} else {
+			t.tokenList = append(t.tokenList, Token{tokenType: BANG, lexeme: "!", line: t.line, literal: nil})
+		}
+	case "=":
+		if t.match("=") {
+			t.tokenList = append(t.tokenList, Token{tokenType: EQUAL_EQUAL, lexeme: "==", line: t.line, literal: nil})
+		} else {
+			t.tokenList = append(t.tokenList, Token{tokenType: EQUAL, lexeme: "=", line: t.line, literal: nil})
+		}
+	case "<":
+		if t.match("=") {
+			t.tokenList = append(t.tokenList, Token{tokenType: LESS_EQUAL, lexeme: "<=", line: t.line, literal: nil})
+		} else {
+			t.tokenList = append(t.tokenList, Token{tokenType: LESS, lexeme: "<", line: t.line, literal: nil})
+		}
+	case ">":
+		if t.match("=") {
+			t.tokenList = append(t.tokenList, Token{tokenType: GREATER_EQUAL, lexeme: ">=", line: t.line, literal: nil})
+		} else {
+			t.tokenList = append(t.tokenList, Token{tokenType: GREATER, lexeme: ">", line: t.line, literal: nil})
+		}
+	}
+}
+
+func (t *Tokenizer) match(m string) bool {
+	if t.isAtEnd() {
+		return false
+	}
+	if t.input[t.current:t.current+1] != m {
+		return false
+	}
+	t.current++
+	return true
 }

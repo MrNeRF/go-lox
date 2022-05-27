@@ -12,6 +12,7 @@ import (
 func run(s string) {
 	t := tokens.NewTokenizer(s)
 	t.ScanTokens()
+	fmt.Println(t.GetTokenList())
 }
 
 func runFile(path string) {
@@ -19,9 +20,7 @@ func runFile(path string) {
 	if err != nil {
 		fmt.Println("Err")
 	}
-	t := tokens.NewTokenizer(string(content))
-	t.ScanTokens()
-	fmt.Println(t.GetTokenList())
+	run(string(content))
 }
 
 func runPrompt() {

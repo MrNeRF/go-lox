@@ -10,6 +10,6 @@ type Token struct {
 }
 
 func (tk Token) String() string {
-	s := fmt.Sprintf("{%v %v %v %v}", tk.tokenType, tk.lexeme, tk.line, tk.literal)
+	s := fmt.Sprintf("{%v, %v, %v, %v}", tk.tokenType, tk.lexeme, tk.line, tk.literal)
 	return s
 }
