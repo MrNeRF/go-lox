@@ -3,14 +3,15 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"go-lox/src/tokens"
 	"io/ioutil"
 	"os"
 )
 
 // run runs a line of lox
 func run(s string) {
-	t := NewTokenizer(s)
-	t.scanTokens()
+	t := tokens.NewTokenizer(s)
+	t.ScanTokens()
 }
 
 func runFile(path string) {
@@ -18,9 +19,9 @@ func runFile(path string) {
 	if err != nil {
 		fmt.Println("Err")
 	}
-	t := NewTokenizer(string(content))
-	t.scanTokens()
-	fmt.Println(t.tokenList)
+	t := tokens.NewTokenizer(string(content))
+	t.ScanTokens()
+	fmt.Println(t.GetTokenList())
 }
 
 func runPrompt() {
