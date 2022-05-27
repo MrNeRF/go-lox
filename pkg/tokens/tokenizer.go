@@ -62,7 +62,11 @@ func (t *Tokenizer) scanToken() {
 	case "!", "=", "<", ">":
 		t.addOperatorToken(c)
 	default:
+		//if t.isDigit(c) {
+		//	t.number()
+		//} else {
 		log.Fatal("Unexpected Character: '", c, "'", " at line ", t.line)
+		//}
 	}
 }
 
@@ -147,4 +151,8 @@ func (t *Tokenizer) match(m string) bool {
 	}
 	t.current++
 	return true
+}
+
+func isDigit(s string) bool {
+	return s[0] >= '0' && s[0] <= '9'
 }
