@@ -69,6 +69,8 @@ func (t *Tokenizer) scanToken() {
 	default:
 		if isDigit(c) {
 			t.addnumberToken()
+		} else if isAlpha(c) {
+			t.addidentifier()
 		} else {
 			log.Fatal("Unexpected Character: '", c, "'", " at line ", t.line)
 		}
@@ -167,8 +169,20 @@ func (t *Tokenizer) match(m string) bool {
 	return true
 }
 
+// only for one characters strings
 func isDigit(s string) bool {
 	return s[0] >= '0' && s[0] <= '9'
+}
+
+// only for one characters strings
+func isAlpha(s string) bool {
+	return ((s[0] >= 'a' && s[0] <= 'z') ||
+		(s[0] >= 'A' && s[0] <= 'Z') ||
+		(s[0] == '_'))
+}
+
+func isAlphaNumeric(s string) bool {
+	return isDigit(s) || isAlpha(s)
 }
 
 func (t *Tokenizer) addnumberToken() {
@@ -188,5 +202,23 @@ func (t *Tokenizer) addnumberToken() {
 }
 
 func (t *Tokenizer) addSlashToken() {
-	//TODO
+	if t.match("/") {
+		for t.peek() != "\n" && !t.isAtEnd() {
+			t.advance()
+		}
+	} else {
+		t.addToken(&Token{tokenType: SLASH, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
+	}
+}
+
+func (t *Tokenizer) addidentifier() {
+	for isAlphaNumeric(t.peek()) {
+		t.advance()
+	}
+	text := t.input[t.start:t.current]
+	if kw, ok := keywords[text]; ok {
+		t.addToken(&Token{tokenType: kw, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
+	} else {
+		t.addToken(&Token{tokenType: IDENTIFIER, lexeme: t.input[t.start:t.current], line: t.line, literal: nil})
+	}
 }
