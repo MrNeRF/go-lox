@@ -1,3 +1,4 @@
 build
 build/*
 src/__debug*
+script/script
