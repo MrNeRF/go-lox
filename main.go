@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	syntaxtrees "go-lox/pkg/syntax-trees"
 	"go-lox/pkg/tokens"
 	"go-lox/pkg/utils"
 	"io/ioutil"
@@ -41,6 +42,11 @@ func runPrompt() {
 }
 
 func main() {
+	fucker := syntaxtrees.NewFuckVisitor(1)
+	apoorUnary := syntaxtrees.Unary{}
+	//and now...we fuck it
+	apoorUnary.Accept(fucker)
+
 	args := os.Args
 	if len(args) > 2 {
 		fmt.Println("Usage: go-lox [script]")
