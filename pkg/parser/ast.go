@@ -1,5 +1,7 @@
-package syntaxtrees
+package parser
+
 import "go-lox/pkg/tokens"
+
 type Expr interface {}
 
 func NewBinary() *Binary {
@@ -54,9 +56,9 @@ func (e *Unary) Accept(visitor ExprVisitor) interface{} {
 }
 
 type ExprVisitor interface {
+	visitLiteral(e *Literal) interface{}
 	visitUnary(e *Unary) interface{}
 	visitBinary(e *Binary) interface{}
 	visitGrouping(e *Grouping) interface{}
-	visitLiteral(e *Literal) interface{}
 }
 

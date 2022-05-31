@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+)
 
 // ast = Abstract Syntax tree
 var ast = map[string][]string{
@@ -46,13 +51,20 @@ func CreateAcceptMethod(key string) string {
 }
 
 func main() {
-	fmt.Println("package syntaxtrees")
-	fmt.Println("import \"go-lox/pkg/tokens\"")
-	fmt.Println(CreateExpression())
-	for key := range ast {
-		fmt.Println(CreateConstructor(key))
-		fmt.Println(CreateClass(key))
-		fmt.Println(CreateAcceptMethod(key))
+	file, err := os.Create("../pkg/parser/ast.go")
+	if err != nil {
+		log.Fatal(err)
 	}
-	fmt.Println(CreateVisitorInterface())
+	writer := bufio.NewWriter(file)
+	astString := "package parser\n\n"
+	astString += "import \"go-lox/pkg/tokens\"\n\n"
+	astString += CreateExpression() + "\n"
+	for key := range ast {
+		astString += CreateConstructor(key) + "\n"
+		astString += CreateClass(key) + "\n"
+		astString += CreateAcceptMethod(key) + "\n"
+	}
+	astString += CreateVisitorInterface() + "\n"
+	writer.WriteString(astString)
+	writer.Flush()
 }
