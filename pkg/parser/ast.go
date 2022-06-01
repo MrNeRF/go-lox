@@ -4,20 +4,6 @@ import "go-lox/pkg/tokens"
 
 type Expr interface {}
 
-func NewBinary() *Binary {
-	return &Binary{}
-}
-
-type Binary struct {
-	left Expr
-	operator tokens.Token
-	right Expr
-}
-
-func (e *Binary) Accept(visitor ExprVisitor) interface{} {
-	return visitor.visitBinary(e)
-}
-
 func NewGrouping() *Grouping {
 	return &Grouping{}
 }
@@ -53,6 +39,20 @@ type Unary struct {
 
 func (e *Unary) Accept(visitor ExprVisitor) interface{} {
 	return visitor.visitUnary(e)
+}
+
+func NewBinary() *Binary {
+	return &Binary{}
+}
+
+type Binary struct {
+	left Expr
+	operator tokens.Token
+	right Expr
+}
+
+func (e *Binary) Accept(visitor ExprVisitor) interface{} {
+	return visitor.visitBinary(e)
 }
 
 type ExprVisitor interface {

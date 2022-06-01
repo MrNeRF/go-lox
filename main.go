@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"go-lox/pkg/parser"
 	"go-lox/pkg/tokens"
 	"go-lox/pkg/utils"
 	"io/ioutil"
@@ -13,7 +14,8 @@ import (
 func run(s string) {
 	t := tokens.NewTokenizer(s)
 	t.ScanTokens()
-	fmt.Println(t.GetTokenList())
+	parser := parser.NewParser(t.GetTokenList())
+	parser.Parse()
 }
 
 func runFile(path string) {
