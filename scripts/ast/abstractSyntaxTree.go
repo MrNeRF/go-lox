@@ -51,7 +51,7 @@ func CreateAcceptMethod(key string) string {
 }
 
 func main() {
-	file, err := os.Create("../pkg/parser/ast.go")
+	file, err := os.Create("pkg/parser/ast.go")
 	if err != nil {
 		log.Fatal(err)
 	}
