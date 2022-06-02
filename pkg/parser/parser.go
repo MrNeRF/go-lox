@@ -11,8 +11,12 @@ type Parser struct {
 	input   []tokens.Token
 }
 
-func (p *Parser) Parse() (Expr, error) {
-	return expression(p)
+func (p *Parser) Parse() Expr {
+	expr, err := expression(p)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+	return expr
 }
 
 func NewParser(input []tokens.Token) *Parser {
@@ -125,7 +129,7 @@ func primary(p *Parser) (Expr, error) {
 			return nil, err
 		}
 
-		_, err = consume(p, tokens.RIGHT_PAREN, "Expected ')' afeter expression")
+		_, err = consume(p, tokens.RIGHT_PAREN, "Expected ')' after expression")
 		if err != nil {
 			return nil, err
 		}
@@ -140,9 +144,8 @@ func consume(p *Parser, tt tokens.TokenType, msg string) (tokens.Token, error) {
 	if p.check(tt) {
 		return p.advance(), nil
 	}
-	log.Panic(p.peek(), msg)
 
-	return tokens.Token{}, errors.New("Not consuming Token")
+	return tokens.Token{}, errors.New(msg)
 }
 
 func match(p *Parser, tt ...tokens.TokenType) bool {
