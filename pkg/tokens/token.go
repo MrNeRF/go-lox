@@ -21,3 +21,7 @@ func (tk *Token) GetTokenType() TokenType {
 func (tk *Token) GetLiteral() interface{} {
 	return tk.literal
 }
+
+func (tk *Token) GetLexeme() string {
+	return tk.lexeme
+}

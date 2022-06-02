@@ -9,10 +9,10 @@ import (
 
 // ast = Abstract Syntax tree
 var ast = map[string][]string{
-	"Binary":   {"left Expr", "operator tokens.Token", "right Expr"},
-	"Grouping": {"expression Expr"},
-	"Literal":  {"value interface{}"},
-	"Unary":    {"operator tokens.Token", "right Expr"},
+	"Binary":   {"Left Expr", "Operator tokens.Token", "Right Expr"},
+	"Grouping": {"Expression Expr"},
+	"Literal":  {"Value interface{}"},
+	"Unary":    {"Operator tokens.Token", "Right Expr"},
 }
 
 func CreateExpression() string {

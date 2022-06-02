@@ -9,7 +9,7 @@ func NewGrouping() *Grouping {
 }
 
 type Grouping struct {
-	expression Expr
+	Expression Expr
 }
 
 func (e *Grouping) Accept(visitor ExprVisitor) interface{} {
@@ -21,7 +21,7 @@ func NewLiteral() *Literal {
 }
 
 type Literal struct {
-	value interface{}
+	Value interface{}
 }
 
 func (e *Literal) Accept(visitor ExprVisitor) interface{} {
@@ -33,8 +33,8 @@ func NewUnary() *Unary {
 }
 
 type Unary struct {
-	operator tokens.Token
-	right Expr
+	Operator tokens.Token
+	Right Expr
 }
 
 func (e *Unary) Accept(visitor ExprVisitor) interface{} {
@@ -46,9 +46,9 @@ func NewBinary() *Binary {
 }
 
 type Binary struct {
-	left Expr
-	operator tokens.Token
-	right Expr
+	Left Expr
+	Operator tokens.Token
+	Right Expr
 }
 
 func (e *Binary) Accept(visitor ExprVisitor) interface{} {
@@ -56,9 +56,9 @@ func (e *Binary) Accept(visitor ExprVisitor) interface{} {
 }
 
 type ExprVisitor interface {
+	visitBinary(e *Binary) interface{}
 	visitGrouping(e *Grouping) interface{}
 	visitLiteral(e *Literal) interface{}
 	visitUnary(e *Unary) interface{}
-	visitBinary(e *Binary) interface{}
 }
 
