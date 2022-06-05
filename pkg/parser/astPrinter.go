@@ -9,6 +9,14 @@ import (
 type AstPrinter struct {
 }
 
+func NewAstPrinter() *AstPrinter {
+	return &AstPrinter{}
+}
+
+func (ap *AstPrinter) Print(expr Expr) string {
+	return fmt.Sprintf("%v", expr.Accept(ap))
+}
+
 func (ap *AstPrinter) visitGrouping(e *Grouping) interface{} {
 	return ap.parenthesize("group", e.Expression)
 }

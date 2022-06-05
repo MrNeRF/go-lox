@@ -14,8 +14,12 @@ import (
 func run(s string) {
 	t := tokens.NewTokenizer(s)
 	t.ScanTokens()
-	parser := parser.NewParser(t.GetTokenList())
-	parser.Parse()
+	tokenList := t.GetTokenList()
+	fmt.Println(tokenList)
+	Parser := parser.NewParser(tokenList)
+	expr := Parser.Parse()
+	astPrinter := parser.NewAstPrinter()
+	fmt.Println(astPrinter.Print(expr))
 }
 
 func runFile(path string) {

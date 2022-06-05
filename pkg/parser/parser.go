@@ -137,7 +137,7 @@ func primary(p *Parser) (Expr, error) {
 		return &Grouping{expr}, err
 	}
 
-	return nil, errors.New("No primary match!")
+	return nil, errors.New("no primary match")
 }
 
 func consume(p *Parser, tt tokens.TokenType, msg string) (tokens.Token, error) {
