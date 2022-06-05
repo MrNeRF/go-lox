@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+//implements ExprVisitor
 type AstPrinter struct {
 }
 
@@ -33,7 +34,7 @@ func (ap *AstPrinter) parenthesize(name string, exprs ...Expr) string {
 	stringBuilder.WriteString("(" + name)
 	for _, expr := range exprs {
 		stringBuilder.WriteString(" ")
-		str := fmt.Sprintf("%v", *expr.Accept(ap))
+		str := fmt.Sprintf("%v", expr.Accept(ap))
 		stringBuilder.WriteString(str)
 	}
 

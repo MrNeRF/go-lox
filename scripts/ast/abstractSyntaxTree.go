@@ -16,7 +16,10 @@ var ast = map[string][]string{
 }
 
 func CreateExpression() string {
-	return fmt.Sprintln("type Expr interface {}")
+	tmpstring := fmt.Sprintln("type Expr interface {")
+	tmpstring += fmt.Sprintln("\tAccept(visitor ExprVisitor) interface{}")
+	tmpstring += "}\n"
+	return tmpstring
 }
 
 func CreateConstructor(nameDerivedClass string) string {

@@ -39,7 +39,7 @@ func equality(p *Parser) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		expr = Binary{expr, operator, right}
+		expr = &Binary{expr, operator, right}
 	}
 	return expr, nil
 }
@@ -55,7 +55,7 @@ func comparison(p *Parser) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		expr = Binary{expr, operator, right}
+		expr = &Binary{expr, operator, right}
 	}
 	return expr, nil
 }
@@ -71,7 +71,7 @@ func term(p *Parser) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		expr = Binary{expr, operator, right}
+		expr = &Binary{expr, operator, right}
 	}
 	return expr, nil
 }
@@ -87,7 +87,7 @@ func factor(p *Parser) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		expr = Binary{expr, operator, right}
+		expr = &Binary{expr, operator, right}
 	}
 
 	return expr, nil
@@ -100,27 +100,27 @@ func unary(p *Parser) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		return Unary{operator, right}, err
+		return &Unary{operator, right}, err
 	}
 	return primary(p)
 }
 
 func primary(p *Parser) (Expr, error) {
 	if match(p, tokens.FALSE) {
-		return Literal{value: false}, nil
+		return &Literal{Value: false}, nil
 	}
 
 	if match(p, tokens.TRUE) {
-		return Literal{value: true}, nil
+		return &Literal{Value: true}, nil
 	}
 
 	if match(p, tokens.NIL) {
-		return Literal{value: nil}, nil
+		return &Literal{Value: nil}, nil
 	}
 
 	if match(p, tokens.NUMBER, tokens.STRING) {
 		l := p.previous()
-		return Literal{value: (&l).GetLiteral()}, nil
+		return &Literal{Value: (&l).GetLiteral()}, nil
 	}
 
 	if match(p, tokens.LEFT_PAREN) {
@@ -134,7 +134,7 @@ func primary(p *Parser) (Expr, error) {
 			return nil, err
 		}
 
-		return Grouping{expr}, err
+		return &Grouping{expr}, err
 	}
 
 	return nil, errors.New("No primary match!")
