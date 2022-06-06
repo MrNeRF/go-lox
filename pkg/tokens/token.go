@@ -9,6 +9,10 @@ type Token struct {
 	literal   interface{}
 }
 
+func NewToken(tt TokenType, lx string, ln int, lit interface{}) *Token {
+	return &Token{tokenType: tt, lexeme: lx, line: ln, literal: lit}
+}
+
 func (tk Token) String() string {
 	s := fmt.Sprintf("{%v %v %v %v}", tk.tokenType, tk.lexeme, tk.line, tk.literal)
 	return s

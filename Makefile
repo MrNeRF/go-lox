@@ -20,3 +20,6 @@ build: $(PACKAGES)
 
 install:
 	go install
+
+test:
+	go test -cover -v ./pkg/parser/...
