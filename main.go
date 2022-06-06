@@ -15,11 +15,11 @@ func run(s string) {
 	t := tokens.NewTokenizer(s)
 	t.ScanTokens()
 	tokenList := t.GetTokenList()
-	fmt.Println(tokenList)
+	//fmt.Println(tokenList)
 	Parser := parser.NewParser(tokenList)
 	expr := Parser.Parse()
-	astPrinter := parser.NewAstPrinter()
-	fmt.Println(astPrinter.Print(expr))
+	Interpreter := parser.NewInterpreter()
+	Interpreter.Interpret(expr)
 }
 
 func runFile(path string) {
