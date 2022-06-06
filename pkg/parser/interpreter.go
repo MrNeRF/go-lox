@@ -20,7 +20,10 @@ func (ip *Interpreter) visitUnary(e *Unary) interface{} {
 	switch e.Operator.GetTokenType() {
 	case tokens.MINUS:
 		return -right.(float64)
+	case tokens.BANG:
+		return !isTruthy(right)
 	}
+
 	return nil
 }
 
@@ -30,4 +33,14 @@ func (ip *Interpreter) visitBinary(e *Binary) interface{} {
 
 func (ip *Interpreter) evaluate(expr Expr) interface{} {
 	return expr.Accept(ip)
+}
+
+func isTruthy(expr interface{}) bool {
+	if expr == nil {
+		return false
+	}
+	if bval, ok := expr.(bool); ok {
+		return bval
+	}
+	return true
 }
