@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"errors"
 	"fmt"
 	"go-lox/pkg/tokens"
 	"log"
@@ -16,6 +15,8 @@ func NewInterpreter() *Interpreter {
 }
 
 func (ip *Interpreter) Interpret(expr Expr) {
+
+	defer func() { recover() }()
 	value := ip.evaluate(expr)
 	fmt.Println(stringify(value))
 }
@@ -33,10 +34,7 @@ func (ip *Interpreter) visitUnary(e *Unary) interface{} {
 
 	switch e.Operator.GetTokenType() {
 	case tokens.MINUS:
-		err := checkNumberOperand(e.Operator, right)
-		if err != nil {
-			log.Println(err.Error()) //Here we need better Error handling! Maybe a special class for Errors.
-		}
+		checkNumberOperand(e.Operator, right)
 		return -right.(float64)
 	case tokens.BANG:
 		return !isTruthy(right)
@@ -51,38 +49,23 @@ func (ip *Interpreter) visitBinary(e *Binary) interface{} {
 
 	switch e.Operator.GetTokenType() {
 	case tokens.GREATER:
-		err := checkNumberOperands(e.Operator, left, right)
-		if err != nil {
-			log.Println(err.Error()) //Here we need better Error handling! Maybe a special class for Errors.
-		}
+		checkNumberOperands(e.Operator, left, right)
 		return left.(float64) > right.(float64)
 	case tokens.GREATER_EQUAL:
-		err := checkNumberOperands(e.Operator, left, right)
-		if err != nil {
-			log.Println(err.Error()) //Here we need better Error handling! Maybe a special class for Errors.
-		}
+		checkNumberOperands(e.Operator, left, right)
 		return left.(float64) >= right.(float64)
 	case tokens.LESS:
-		err := checkNumberOperands(e.Operator, left, right)
-		if err != nil {
-			log.Println(err.Error()) //Here we need better Error handling! Maybe a special class for Errors.
-		}
+		checkNumberOperands(e.Operator, left, right)
 		return left.(float64) < right.(float64)
 	case tokens.LESS_EQUAL:
-		err := checkNumberOperands(e.Operator, left, right)
-		if err != nil {
-			log.Println(err.Error()) //Here we need better Error handling! Maybe a special class for Errors.
-		}
+		checkNumberOperands(e.Operator, left, right)
 		return left.(float64) <= right.(float64)
 	case tokens.BANG_EQUAL:
 		return !isEqual(left, right)
 	case tokens.EQUAL_EQUAL:
 		return isEqual(left, right)
 	case tokens.MINUS:
-		err := checkNumberOperands(e.Operator, left, right)
-		if err != nil {
-			log.Println(err.Error()) //Here we need better Error handling! Maybe a special class for Errors.
-		}
+		checkNumberOperands(e.Operator, left, right)
 		return left.(float64) - right.(float64)
 	case tokens.PLUS:
 
@@ -97,19 +80,14 @@ func (ip *Interpreter) visitBinary(e *Binary) interface{} {
 		if leftokstring && rightokstring {
 			return leftstring + rightstring
 		}
-		log.Println("Operands must be two numbers or two strings") //Here we need a better Error handling!
+		strErr := fmt.Sprintf("Operands must be two numbers or two strings in line %v", e.Operator.GetLine())
+		log.Panic(strErr)
 
 	case tokens.SLASH:
-		err := checkNumberOperands(e.Operator, left, right)
-		if err != nil {
-			log.Println(err.Error()) //Here we need better Error handling! Maybe a special class for Errors.
-		}
+		checkNumberOperands(e.Operator, left, right)
 		return left.(float64) / right.(float64)
 	case tokens.STAR:
-		err := checkNumberOperands(e.Operator, left, right)
-		if err != nil {
-			log.Println(err.Error()) //Here we need better Error handling! Maybe a special class for Errors.
-		}
+		checkNumberOperands(e.Operator, left, right)
 		return left.(float64) * right.(float64)
 	}
 
@@ -140,29 +118,30 @@ func isEqual(a interface{}, b interface{}) bool {
 	return a == b
 }
 
-func checkNumberOperand(tk tokens.Token, operand interface{}) error {
+func checkNumberOperand(tk tokens.Token, operand interface{}) {
 	if _, ok := operand.(float64); ok {
-		return nil
+		return
 	} else {
-		errStr := fmt.Sprintf("Operand %v must be a number", operand)
-		return errors.New(errStr)
+		errStr := fmt.Sprintf("Operand %v must be a number in line %v", operand, tk.GetLine())
+		panic(errStr)
 	}
 }
 
-func checkNumberOperands(tk tokens.Token, leftOperand interface{}, rightOperand interface{}) error {
+func checkNumberOperands(tk tokens.Token, leftOperand interface{}, rightOperand interface{}) {
 	_, leftokfloat := leftOperand.(float64)
 	_, rightokfloat := rightOperand.(float64)
 	if leftokfloat && rightokfloat {
-		return nil
+		return
 	}
 	var errStr string = ""
 	if !leftokfloat {
-		errStr += fmt.Sprintf("Left Operand %v must be a number\n", leftOperand)
+		errStr += fmt.Sprintf("Left Operand %v must be a number", leftOperand)
 	}
 	if !rightokfloat {
-		errStr += fmt.Sprintf("Right Operand %v must be a number\n", rightOperand)
+		errStr += fmt.Sprintf("Right Operand %v must be a number", rightOperand)
 	}
-	return errors.New(errStr)
+	errStr += fmt.Sprintf("in line %v", tk.GetLine())
+	panic(errStr)
 }
 
 func stringify(expr interface{}) string {

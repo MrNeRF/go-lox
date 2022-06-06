@@ -29,3 +29,7 @@ func (tk *Token) GetLiteral() interface{} {
 func (tk *Token) GetLexeme() string {
 	return tk.lexeme
 }
+
+func (tk *Token) GetLine() int {
+	return tk.line
+}
