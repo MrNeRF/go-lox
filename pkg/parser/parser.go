@@ -11,12 +11,35 @@ type Parser struct {
 	input   []tokens.Token
 }
 
-func (p *Parser) Parse() Expr {
+func printStatement(p *Parser) (Stmt, error) {
+	value, err := expression(p)
+	consume(p, tokens.SEMICOLON, "Expect ';' after value.")
+	return &Print{Expression: value}, err
+}
+
+func expressionStatement(p *Parser) (Stmt, error) {
 	expr, err := expression(p)
-	if err != nil {
-		log.Panic(err.Error())
+	consume(p, tokens.SEMICOLON, "Expect ';' after expression.")
+	return &Expression{Expression: expr}, err
+}
+
+func (p *Parser) statement() (Stmt, error) {
+	if match(p, tokens.PRINT) {
+		return printStatement(p)
 	}
-	return expr
+	return expressionStatement(p)
+}
+
+func (p *Parser) Parse() []Stmt {
+	var statements []Stmt
+	for !p.isAtEnd() {
+		stmt, err := p.statement()
+		if err != nil {
+			log.Panic(err.Error())
+		}
+		statements = append(statements, stmt)
+	}
+	return statements
 }
 
 func NewParser(input []tokens.Token) *Parser {
